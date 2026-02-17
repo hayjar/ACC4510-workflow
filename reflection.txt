@@ -1,0 +1,8 @@
+I feel that using GitHub over just prompting a chatbot to generate the analysis was so much more structured. While the functions of GitHub require more steps to ensure it runs properly, with the assistance of AI
+code writing it became far more managable. I think it makes the workflow process more fluid. No need to worry about overloading the chatbot with too much data or a long chat history which can affect outputs. By
+using code to generate the analysis instead of prompts it is also far more consistant with results. Because of that, along with GitHub keeping a history of commands and changes, it makes auditing the results easier 
+and more effecttive. The control is also in the hands of the program reading the code. While the code is written by someone, there is far fewer chances of human error in the analysis or manipulation of the data
+because if the code is wrong the program cannot run it. Unlike manual inuts in excel which can make it harder to spot errors, especially in larger data sets. If I had more time on the assignment I would do a deeper
+analysis similar to what we did in project 1. I actually believe it would take me far less time to complete an analysis of that size using this method than what we used to complete that assignment. I think using a
+workflow like this would assist with consolidating balance sheets with subsidiaries. I am taking ACC 5020 and we have been working through how to calculate the final values in those consolidated statements. This
+would make that process so much easier.
