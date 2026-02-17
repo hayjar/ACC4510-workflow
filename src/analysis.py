@@ -5,7 +5,7 @@ import os
 
 # --- CONFIGURATION ---
 # We assume the file is inside a 'data' folder.
-DATA_FILE = 'data/survey_data.csv' 
+DATA_FILE = 'data/survey_data.xlsx' 
 OUTPUT_FOLDER = 'outputs'
 
 # --- 1. LOAD DATA ---
