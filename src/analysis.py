@@ -4,20 +4,31 @@ import seaborn as sns
 import os
 
 # --- CONFIGURATION ---
-# We assume the file is inside a 'data' folder.
+# Make sure your file in the data folder is named exactly this:
 DATA_FILE = 'data/survey_data.xlsx' 
 OUTPUT_FOLDER = 'outputs'
 
 # --- 1. LOAD DATA ---
-# The file has 3 header rows. We keep the first one (index 0) and skip rows 2 and 3 (index 1 and 2).
-# This gives us headers like 'Q35_1', 'Q35_5', etc.
 if not os.path.exists(DATA_FILE):
-    raise FileNotFoundError(f"Could not find {DATA_FILE}. Make sure the file is in the 'data' folder.")
+    print(f"ERROR: The file '{DATA_FILE}' was not found.")
+    print("Files in data directory:")
+    if os.path.exists('data'):
+        print(os.listdir('data'))
+    else:
+        print("'data' directory missing.")
+    exit(1)
 
-df = pd.read_csv(DATA_FILE, skiprows=[1, 2])
+try:
+    # UPDATED: Use read_excel for .xlsx files
+    # We skip rows 2 and 3 (index 1 and 2) to match the header format
+    df = pd.read_excel(DATA_FILE, engine='openpyxl', skiprows=[1, 2])
+    print("Successfully loaded Excel file.")
+    
+except Exception as e:
+    print(f"Failed to read Excel file: {e}")
+    exit(1)
 
 # --- 2. MAP COLUMNS TO COURSE NAMES ---
-# Mapping based on the specific Question IDs in your dataset
 course_mapping = {
     'Q35_1': 'ACC 6060: Pro. & Leadership',
     'Q35_5': 'ACC 6300: Data Analytics',
@@ -30,36 +41,34 @@ course_mapping = {
 }
 
 # --- 3. CLEAN AND RESHAPE ---
-# Filter only the columns we need
-df_clean = df[list(course_mapping.keys())].copy()
+# Check if columns exist before proceeding
+missing_cols = [col for col in course_mapping.keys() if col not in df.columns]
+if missing_cols:
+    print(f"ERROR: Could not find columns: {missing_cols}")
+    print("Columns found in file:", df.columns.tolist()[:10])
+    exit(1)
 
-# Rename them to readable course names
+df_clean = df[list(course_mapping.keys())].copy()
 df_clean.rename(columns=course_mapping, inplace=True)
 
-# "Melt" the data (unpivot) so we have one row per ranking
+# "Melt" the data
 df_melted = df_clean.melt(var_name='Course', value_name='Rank')
-
-# Remove empty rankings and ensure numbers are integers
 df_melted.dropna(inplace=True)
 df_melted['Rank'] = pd.to_numeric(df_melted['Rank'])
 
 # --- 4. GENERATE RANKING ---
-# Calculate average rank (Lower number = Better rank)
 ranking_summary = df_melted.groupby('Course')['Rank'].mean().sort_values()
 print("Rank Order (Lower is Better):")
 print(ranking_summary)
 
 # --- 5. CREATE FIGURE ---
 plt.figure(figsize=(10, 6))
-# Create a bar chart
 sns.barplot(x=ranking_summary.values, y=ranking_summary.index, palette='viridis')
 plt.xlabel('Average Rank (1 = Most Beneficial)')
 plt.title('MAcc Core Course Student Rankings')
-plt.grid(axis='x', linestyle='--', alpha=0.7)
 plt.tight_layout()
 
 # --- 6. SAVE OUTPUT ---
-# Create the outputs folder if it doesn't exist
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 output_path = os.path.join(OUTPUT_FOLDER, 'rank_order.png')
 plt.savefig(output_path)
